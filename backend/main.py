@@ -1,15 +1,14 @@
 from typing import Union
+from PacketSniffer import PacketSniffer
 
 from fastapi import FastAPI
 
 app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+packet_sniffer = PacketSniffer()
+packet_sniffer.start()
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/reports")
+def get_reports():
+    return packet_sniffer.get_reports()
