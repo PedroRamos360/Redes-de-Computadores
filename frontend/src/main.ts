@@ -1,5 +1,5 @@
-import { Api } from "./api/Api";
-import { BarGraph } from "./charts/BarGraph";
+import Api from "./api/Api.js";
+import BarGraph from "./charts/BarGraph.js";
 
 const api = new Api();
 

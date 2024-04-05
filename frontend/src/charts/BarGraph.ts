@@ -1,4 +1,4 @@
-export class BarGraph {
+export default class BarGraph {
   constructor(
     private readonly data: Record<string, number>,
     private readonly elementId: string,

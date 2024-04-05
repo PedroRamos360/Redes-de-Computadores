@@ -1,4 +1,4 @@
-export class Api {
+export default class Api {
   private readonly baseUrl: string;
   constructor() {
     this.baseUrl = "http://localhost:8000";
