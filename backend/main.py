@@ -12,4 +12,4 @@ packet_sniffer.start()
 
 @app.get("/reports")
 def get_reports():
-    return packet_sniffer.get_reports()
+    return packet_sniffer.get_reports(5)

@@ -58,9 +58,19 @@ class PacketSniffer:
         self.__stop_sniffing.set()
         self.__sniffer_thread.join()
 
-    def get_reports(self):
+    def get_reports(self, top_n=5):
+        sorted_source_ips = sorted(
+            self.__source_ips.items(), key=lambda x: x[1], reverse=True
+        )[:top_n]
+        sorted_destination_ips = sorted(
+            self.__destination_ips.items(), key=lambda x: x[1], reverse=True
+        )[:top_n]
+        sorted_destination_countries = sorted(
+            self.__destination_countries.items(), key=lambda x: x[1], reverse=True
+        )[:top_n]
+
         return {
-            "sourceIps": self.__source_ips,
-            "destinationIps": self.__destination_ips,
-            "destinationCountries": self.__destination_countries,
+            "sourceIps": dict(sorted_source_ips),
+            "destinationIps": dict(sorted_destination_ips),
+            "destinationCountries": dict(sorted_destination_countries),
         }

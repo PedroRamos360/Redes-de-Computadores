@@ -8,7 +8,9 @@ export default class BarGraph {
   render() {
     const element = document.getElementById(this.elementId);
     if (!element) throw new Error("Element not found");
-    const traffic = echarts.init(element as HTMLDivElement);
+    const traffic = echarts.init(element as HTMLDivElement, "", {
+      width: 800,
+    });
     const option = {
       title: {
         text: this.title,
@@ -26,6 +28,7 @@ export default class BarGraph {
         },
       ],
     };
+    element.style.width = "800px";
     traffic.setOption(option);
   }
 
