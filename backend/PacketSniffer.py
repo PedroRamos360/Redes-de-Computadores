@@ -2,6 +2,7 @@ from scapy.all import sniff
 from scapy.layers.inet import IP
 import threading
 from IpToCountry import IpToCountry
+from isPrivateIp import isPrivateIp
 
 
 class PacketSniffer:
@@ -28,9 +29,11 @@ class PacketSniffer:
             if IP in pkt:
                 src_ip = pkt[IP].src
                 dst_ip = pkt[IP].dst
-                self.__add_source_ip_entry(src_ip)
-                self.__add_destination_ip_entry(dst_ip)
-                self.__add_country_entry(dst_ip)
+                if isPrivateIp(src_ip):
+                    self.__add_source_ip_entry(src_ip)
+                if not isPrivateIp(dst_ip):
+                    self.__add_destination_ip_entry(dst_ip)
+                    self.__add_country_entry(dst_ip)
 
     def __add_country_entry(self, ip: str):
         country = self.__ip_to_country.get_country(ip)

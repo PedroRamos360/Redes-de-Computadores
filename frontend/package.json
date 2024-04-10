@@ -4,15 +4,14 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "tsc --watch"
+    "build": "tsc --watch",
+    "start": "live-server"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "echarts": "^5.5.0"
-  },
   "devDependencies": {
-    "@types/echarts": "^4.9.22"
+    "@types/echarts": "^4.9.22",
+    "live-server": "^1.2.2"
   }
 }
