@@ -14,7 +14,7 @@ class PacketSniffer:
         self.__stop_sniffing = threading.Event()
         self.__sniffer_thread = threading.Thread(target=self.__start_sniffing)
         print("Loading ip to country csv...")
-        self.__ip_to_country = IpToCountry("ip_to_country.csv")
+        self.__ip_to_country = IpToCountry("./PacketSniffer/ip_to_country.csv")
 
     def __start_sniffing(self):
         filter_expression = "ip and tcp"

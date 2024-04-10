@@ -3,7 +3,7 @@ import BarGraph from "./charts/BarGraph.js";
 
 const api = new Api();
 
-api.get("/reports").then((data) => {
+api.get("/sniffer-reports").then((data) => {
   const sourceIpGraph = new BarGraph(
     data.sourceIps,
     "generated-traffic-per-source",
