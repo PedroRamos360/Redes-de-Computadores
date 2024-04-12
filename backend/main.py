@@ -11,7 +11,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.add_middleware(CORSMiddleware, allow_origins=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 packet_sniffer = PacketSniffer()
 
 
@@ -28,5 +34,5 @@ def start_sniffer():
 
 @app.post("/sniffer-stop")
 def start_sniffer():
-    packet_sniffer.start()
+    packet_sniffer.stop()
     return {"status": "started"}

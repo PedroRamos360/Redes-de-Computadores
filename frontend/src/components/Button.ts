@@ -1,11 +1,18 @@
-import Api from "../api/Api";
+import Api from "../api/Api.js";
 
-export async function start() {
-  const api = new Api();
-  await api.post("/sniffer-start");
-}
+console.log("COMEÇou")
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
 
-export async function stop() {
-  const api = new Api();
-  await api.post("/sniffer-stop");
-}
+const api = new Api();
+
+startBtn?.addEventListener('click', () => {
+  alert("Sniffer inicializado, aguarde até que o sniffer encontre pacotes.");
+  void api.post("/sniffer-start");
+});
+
+stopBtn?.addEventListener('click', () => {
+  alert("Sniffer finalizado.");
+  void api.post("/sniffer-stop");
+});
+
