@@ -14,15 +14,20 @@ class ArpDiscovery:
     def __init__(self, network: str):
         self.__stop_arp = threading.Event()
         self.__network = network
-        self.__arp_thread = threading.Thread(target=self.__start_arp)
+        self.__arp_thread = None
         self.__mac_vendors = load_oui_database()
 
     def start(self):
-        self.__arp_thread.start()
+        if self.__arp_thread is None or not self.__arp_thread.is_alive():
+            self.__arp_thread = threading.Thread(target=self.__start_arp)
+            self.__arp_thread.start()
+        else:
+            print("ARP thread is already running.")
 
     def stop(self):
         self.__stop_arp.set()
-        self.__arp_thread.join()
+        if self.__arp_thread is not None and self.__arp_thread.is_alive():
+            self.__arp_thread.join()
 
     def get_all_ips_in_network(self):
         try:
