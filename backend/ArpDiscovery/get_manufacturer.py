@@ -1,9 +1,12 @@
 import re
+import os
+
+dirname = os.path.dirname(__file__)
 
 
 def load_oui_database():
     oui_database = {}
-    with open("mac_vendors.txt", "r") as file:
+    with open(f"{dirname}/mac_vendors.txt", "r") as file:
         for line in file:
             parts = line.strip().split("\t")
             if len(parts) >= 2:

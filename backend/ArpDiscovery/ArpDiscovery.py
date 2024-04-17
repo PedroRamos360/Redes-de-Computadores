@@ -3,29 +3,27 @@ import sys
 from typing import List
 from ping3 import ping
 import ipaddress
-from get_device_info import get_device_info
 from get_manufacturer import load_oui_database, get_mac_manufacturer
+from get_device_info import get_device_info
 
 
 class ArpDiscovery:
     __network = None
     __devices_discovered = []
 
-    def __init__(self):
+    def __init__(self, network: str):
         self.__stop_arp = threading.Event()
+        self.__network = network
         self.__arp_thread = threading.Thread(target=self.__start_arp)
 
-    def __start_arp(self):
-        pass
-
-    def start():
+    def start(self):
         self.__arp_thread.start()
 
-    def stop():
+    def stop(self):
         self.__stop_arp.set()
         self.__arp_thread.join()
 
-    def get_all_ips_in_network(network_cidr):
+    def get_all_ips_in_network(self, network_cidr):
         try:
             network = ipaddress.IPv4Network(network_cidr, strict=False)
             ip_list = [str(ip) for ip in network.hosts()]
@@ -33,7 +31,7 @@ class ArpDiscovery:
         except ValueError as e:
             return str(e)
 
-    def ping_and_print_info(ip, timeout, devices: list):
+    def ping_and_print_info(self, ip, timeout, devices: list):
         oui_database = load_oui_database()
         response = ping(ip, timeout)
         if response is not None and response is not False:
@@ -70,6 +68,19 @@ class ArpDiscovery:
                 new_device.status,
             )
             devices.append(new_device)
+
+    def __start_arp(self):
+        timeout = 0.1
+        ips_in_network = self.get_all_ips_in_network(self.__network)
+        while len(ips_in_network) > 0:
+            for i in range(10):
+                self.ping_and_print_info(
+                    ips_in_network[i], timeout, self.__devices_discovered
+                )
+            ips_in_network = ips_in_network[10:]
+
+    def get_devices(self):
+        return self.__devices_discovered
 
 
 class Device:
