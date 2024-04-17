@@ -15,6 +15,7 @@ class ArpDiscovery:
         self.__stop_arp = threading.Event()
         self.__network = network
         self.__arp_thread = threading.Thread(target=self.__start_arp)
+        self.__mac_vendors = load_oui_database()
 
     def start(self):
         self.__arp_thread.start()
@@ -23,16 +24,15 @@ class ArpDiscovery:
         self.__stop_arp.set()
         self.__arp_thread.join()
 
-    def get_all_ips_in_network(self, network_cidr):
+    def get_all_ips_in_network(self):
         try:
-            network = ipaddress.IPv4Network(network_cidr, strict=False)
+            network = ipaddress.IPv4Network(self.__network, strict=False)
             ip_list = [str(ip) for ip in network.hosts()]
             return ip_list
         except ValueError as e:
             return str(e)
 
     def ping_and_print_info(self, ip, timeout, devices: list):
-        oui_database = load_oui_database()
         response = ping(ip, timeout)
         if response is not None and response is not False:
             device_info = get_device_info(ip)
@@ -40,7 +40,7 @@ class ArpDiscovery:
                 new_device = Device(
                     ip,
                     device_info["mac"],
-                    get_mac_manufacturer(device_info["mac"], oui_database),
+                    get_mac_manufacturer(device_info["mac"], self.__mac_vendors),
                     "on",
                 )
                 print(
@@ -58,7 +58,6 @@ class ArpDiscovery:
                     new_device.vendor,
                     new_device.status,
                 )
-                devices.append(new_device)
         else:
             new_device = Device(ip, "-", "-", "off")
             print(
@@ -67,17 +66,20 @@ class ArpDiscovery:
                 new_device.vendor,
                 new_device.status,
             )
-            devices.append(new_device)
 
     def __start_arp(self):
         timeout = 0.1
-        ips_in_network = self.get_all_ips_in_network(self.__network)
+        ips_in_network = self.get_all_ips_in_network()
+        print(ips_in_network)
         while len(ips_in_network) > 0:
-            for i in range(10):
+            stopAt = 10
+            if len(ips_in_network) < 10:
+                stopAt = len(ips_in_network)
+            for i in range(stopAt):
                 self.ping_and_print_info(
                     ips_in_network[i], timeout, self.__devices_discovered
                 )
-            ips_in_network = ips_in_network[10:]
+            ips_in_network = ips_in_network[stopAt:]
 
     def get_devices(self):
         return self.__devices_discovered

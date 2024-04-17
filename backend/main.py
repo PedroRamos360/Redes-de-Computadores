@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # packet_sniffer = PacketSniffer()
-arp_discovery = ArpDiscovery("/24")
+arp_discovery = ArpDiscovery("10.0.0.0/24")
 
 
 @app.get("/sniffer-reports")
@@ -57,4 +57,4 @@ def stop_arp():
 
 @app.get("/arp-devices")
 def get_arp_devices():
-    return arp_discovery.get_devices_discovered()
+    return arp_discovery.get_devices()
