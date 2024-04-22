@@ -18,6 +18,7 @@ class ArpDiscovery:
         self.__mac_vendors = load_oui_database()
 
     def start(self):
+        self.__devices_discovered = []
         if self.__arp_thread is None or not self.__arp_thread.is_alive():
             self.__arp_thread = threading.Thread(target=self.__start_arp)
             self.__arp_thread.start()
