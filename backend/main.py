@@ -5,13 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# dir = os.path.join(current_dir, "PacketSniffer")
-# sys.path.append(dir)
-# from PacketSniffer import PacketSniffer
-# from ArpDiscovery import ArpDiscovery
-
-sys.path.append(os.path.join(current_dir, "ArpDiscovery"))
-from ArpDiscovery import ArpDiscovery
+sys.path.append(os.path.join(current_dir, "../"))
+from backend.PacketSniffer.PacketSniffer import PacketSniffer
+from backend.ArpDiscovery.ArpDiscovery import ArpDiscovery
 
 app = FastAPI()
 
@@ -22,8 +18,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# packet_sniffer = PacketSniffer()
-arp_discovery = ArpDiscovery("10.0.0.0/24")
+packet_sniffer = PacketSniffer()
+arp_discovery = ArpDiscovery("172.21.0.1/28")
 
 
 @app.get("/sniffer-reports")
@@ -49,12 +45,14 @@ def start_arp():
     return {"status": "started"}
 
 
-@app.post("/arp-stop")
-def stop_arp():
-    arp_discovery.stop()
-    return {"status": "stopped"}
+@app.post("/arp-set-network/{network}/{mask}")
+def set_arp_network(network: str, mask: str):
+    arp_discovery.set_network(network + "/" + mask)
+    return
 
 
 @app.get("/arp-devices")
 def get_arp_devices():
+    if arp_discovery.finished:
+        return {"finished": True}
     return arp_discovery.get_devices()

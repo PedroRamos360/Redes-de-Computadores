@@ -2,7 +2,8 @@ import Api from "./api/Api.js";
 
 console.log("COMEÇou");
 const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
+const setNetworkBtn = document.getElementById("setNetwork");
+const inputNetwork = document.getElementById("network") as HTMLInputElement;
 
 const api = new Api();
 
@@ -11,6 +12,8 @@ interface ArpDevice {
   macAddress: string;
   vendor: string;
 }
+
+let finished = false;
 
 function replaceEntries(arpDevices: ArpDevice[]) {
   const tableBody = document
@@ -37,13 +40,22 @@ startBtn?.addEventListener("click", () => {
   void api.post("/arp-start");
 });
 
-stopBtn?.addEventListener("click", () => {
-  alert("Arp finalizado.");
-  void api.post("/arp-stop");
+setNetworkBtn?.addEventListener("click", async () => {
+  const network = inputNetwork?.value;
+  if (!network) return alert("Insira um endereço de rede válido");
+  await api.post(`/arp-set-network/${network}`);
+  alert("Endereço de rede setado");
 });
 
 async function addArpDevicesInTable() {
   const data = await api.get("/arp-devices");
+  console.log(data);
+  if (data.finished) {
+    if (!finished) alert("Arp finalizado");
+    finished = true;
+    return;
+  }
+  finished = false;
   replaceEntries(data);
 }
 

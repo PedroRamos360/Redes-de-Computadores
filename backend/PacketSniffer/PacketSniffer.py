@@ -1,8 +1,8 @@
 from scapy.all import sniff
 from scapy.layers.inet import IP
 import threading
-from IpToCountry import IpToCountry
-from isPrivateIp import isPrivateIp
+from backend.PacketSniffer.IpToCountry import IpToCountry
+from backend.PacketSniffer.isPrivateIp import isPrivateIp
 
 
 class PacketSniffer:

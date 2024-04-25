@@ -3,13 +3,17 @@ import sys
 from typing import List
 from ping3 import ping
 import ipaddress
-from get_manufacturer import load_oui_database, get_mac_manufacturer
-from get_device_info import get_device_info
+from backend.ArpDiscovery.get_manufacturer import (
+    load_oui_database,
+    get_mac_manufacturer,
+)
+from backend.ArpDiscovery.get_device_info import get_device_info
 
 
 class ArpDiscovery:
     __network = None
     __devices_discovered = []
+    finished = False
 
     def __init__(self, network: str):
         self.__stop_arp = threading.Event()
@@ -74,6 +78,7 @@ class ArpDiscovery:
             )
 
     def __start_arp(self):
+        self.finished = False
         timeout = 0.1
         ips_in_network = self.get_all_ips_in_network()
         print(ips_in_network)
@@ -86,6 +91,13 @@ class ArpDiscovery:
                     ips_in_network[i], timeout, self.__devices_discovered
                 )
             ips_in_network = ips_in_network[stopAt:]
+        self.finished = True
+
+    def set_network(self, network: str):
+        self.__network = network
+        self.__devices_discovered = []
+        self.finished = False
+        print("Network set to: " + self.__network)
 
     def get_devices(self):
         return self.__devices_discovered
