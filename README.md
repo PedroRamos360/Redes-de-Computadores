@@ -32,28 +32,18 @@ OBS2: Para executar o projeto no windows precisei installar o winpcap
 
 O frontend é desenvolvido usando typescript e a bilbioteca do echarts.js, tentei usar o echarts como dependência do npm mas deu alguns problemas, então seguimos com o arquivo .js mesmo e só o @types dele pra não dar problema com o typescript.
 
+OBS: USAR NPM, yarn da problema com o live server
+
 Para instalar as dependências a partir da raíz do projeto:
 
 `cd frontend`
-
-`yarn`
-
-ou
 
 `npm install`
 
 Para compilar os arquivos ts:
 
-`yarn build`
-
-ou
-
 `npm run build`
 
 Para executar o live-server que entrega o arquivo .html
-
-`yarn start`
-
-ou
 
 `npm run start`
