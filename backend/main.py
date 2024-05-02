@@ -8,6 +8,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../"))
 from backend.PacketSniffer.PacketSniffer import PacketSniffer
 from backend.ArpDiscovery.ArpDiscovery import ArpDiscovery
+from backend.RipSniffer.RipSniffer import RipSniffer
 
 app = FastAPI()
 
@@ -19,6 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 packet_sniffer = PacketSniffer()
+rip_sniffer = RipSniffer()
 arp_discovery = ArpDiscovery("172.21.0.1/28")
 
 
@@ -56,3 +58,8 @@ def get_arp_devices():
     if arp_discovery.finished:
         return {"finished": True}
     return arp_discovery.get_devices()
+
+
+@app.get("/rip-data")
+def get_rip_data():
+    return rip_sniffer.get_data()

@@ -1,6 +1,5 @@
 import Api from "./api/Api.js";
 
-console.log("COMEÇou");
 const startBtn = document.getElementById("startBtn");
 const setNetworkBtn = document.getElementById("setNetwork");
 const inputNetwork = document.getElementById("network") as HTMLInputElement;
