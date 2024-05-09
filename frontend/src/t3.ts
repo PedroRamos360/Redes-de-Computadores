@@ -1,4 +1,4 @@
-import Api from "./api/Api";
+import Api from "./api/Api.js";
 
 interface RipEntry {
   srcIp: string;
