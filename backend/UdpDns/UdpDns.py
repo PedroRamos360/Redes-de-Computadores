@@ -7,19 +7,18 @@ DNS_RESPONSE_CODE = 1
 
 class UdpDns:
     def __init__(self):
-        self.__results = []
         self.__stop_sniffing = threading.Event()
-        self.__sniffer_thread = threading.Thread(target=self.__start_sniffing)
         self.__dns_queries = {}
 
     def __start_sniffing(self):
         filter_expression = "udp and port 53"
-        sniff(
-            prn=self.__parse_packet,
-            filter=filter_expression,
-            promisc=True,
-            iface="Wi-Fi",
-        )
+        while not self.__stop_sniffing.is_set():
+            sniff(
+                prn=self.__parse_packet,
+                filter=filter_expression,
+                count=1,
+                timeout=1,
+            )
 
     def __parse_packet(self, pkt):
         if DNS in pkt:
@@ -59,11 +58,14 @@ class UdpDns:
                 dns_entry["resolvedIp"] = resolved_ips[0]
 
     def start(self):
+        self.__stop_sniffing.clear()
+        self.__sniffer_thread = threading.Thread(target=self.__start_sniffing)
         self.__sniffer_thread.start()
 
     def stop(self):
         self.__stop_sniffing.set()
         self.__sniffer_thread.join()
+        self.__dns_queries = {}
 
     def get_dns_results(self):
         return self.__dns_queries
