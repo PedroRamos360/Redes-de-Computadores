@@ -1,5 +1,5 @@
 from scapy.all import *
-from backend.RipSniffer.PcapReader import PcapReader
+from backend.PcapReader import PcapReader
 import os
 
 current_dir = os.path.dirname(os.path.abspath(__file__))

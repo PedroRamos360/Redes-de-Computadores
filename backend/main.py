@@ -1,8 +1,9 @@
 import os
 import sys
 from typing import Union
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../"))
@@ -10,6 +11,7 @@ from backend.PacketSniffer.PacketSniffer import PacketSniffer
 from backend.ArpDiscovery.ArpDiscovery import ArpDiscovery
 from backend.RipSniffer.RipSniffer import RipSniffer
 from backend.UdpDns.UdpDns import UdpDns
+from backend.Tcp.TcpAnalyzer import TcpAnalyzer
 
 app = FastAPI()
 
@@ -20,6 +22,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+tcp = TcpAnalyzer()
 packet_sniffer = PacketSniffer()
 rip_sniffer = RipSniffer()
 arp_discovery = ArpDiscovery("172.21.0.1/28")
@@ -82,3 +85,10 @@ def stop_dns():
 @app.get("/dns-data")
 def get_dns_data():
     return udp_dns.get_dns_results()
+
+
+@app.get("/tcp-data", response_model=List[dict])
+def get_tcp_data(
+    slice_start: int = Query(..., ge=0), slice_end: int = Query(..., ge=0)
+):
+    return tcp.get_data(slice_start, slice_end)
