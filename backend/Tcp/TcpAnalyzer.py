@@ -14,7 +14,7 @@ class TcpAnalyzer:
 
     def get_data(self, slice_start, slice_end):
         data = []
-        for packet in self.packets:
+        for packet in self.packets[slice(slice_start, slice_end)]:
             try:
                 if TCP in packet:
                     tcp_layer = packet[TCP]
@@ -38,4 +38,4 @@ class TcpAnalyzer:
             except Exception as e:
                 print(f"Error processing packet: {e}")
 
-        return data[slice(slice_start, slice_end)]
+        return data
