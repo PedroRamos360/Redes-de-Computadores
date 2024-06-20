@@ -3,7 +3,7 @@ import sys
 from typing import Union
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import Dict
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../"))
@@ -87,7 +87,7 @@ def get_dns_data():
     return udp_dns.get_dns_results()
 
 
-@app.get("/tcp-data", response_model=List[dict])
+@app.get("/tcp-data", response_model=Dict[str, Dict[str, int]])
 def get_tcp_data(
     slice_start: int = Query(..., ge=0), slice_end: int = Query(..., ge=0)
 ):
