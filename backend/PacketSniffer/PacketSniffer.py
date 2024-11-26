@@ -1,7 +1,8 @@
 from scapy.all import sniff
 from scapy.layers.inet import IP
 import threading
-from IpToCountry import IpToCountry
+from backend.PacketSniffer.IpToCountry import IpToCountry
+from backend.PacketSniffer.isPrivateIp import isPrivateIp
 
 
 class PacketSniffer:
@@ -12,10 +13,10 @@ class PacketSniffer:
         self.__destination_countries = {}
         self.__stop_sniffing = threading.Event()
         self.__sniffer_thread = threading.Thread(target=self.__start_sniffing)
-        print("Loading ip to country csv...")
-        self.__ip_to_country = IpToCountry("ip_to_country.csv")
 
     def __start_sniffing(self):
+        print("Loading ip to country csv...")
+        self.__ip_to_country = IpToCountry("./PacketSniffer/ip_to_country.csv")
         filter_expression = "ip and tcp"
         while not self.__stop_sniffing.is_set():
             print("sniffing 10 packets...")
@@ -28,9 +29,11 @@ class PacketSniffer:
             if IP in pkt:
                 src_ip = pkt[IP].src
                 dst_ip = pkt[IP].dst
-                self.__add_source_ip_entry(src_ip)
-                self.__add_destination_ip_entry(dst_ip)
-                self.__add_country_entry(dst_ip)
+                if isPrivateIp(src_ip):
+                    self.__add_source_ip_entry(src_ip)
+                if not isPrivateIp(dst_ip):
+                    self.__add_destination_ip_entry(dst_ip)
+                    self.__add_country_entry(dst_ip)
 
     def __add_country_entry(self, ip: str):
         country = self.__ip_to_country.get_country(ip)
@@ -58,9 +61,19 @@ class PacketSniffer:
         self.__stop_sniffing.set()
         self.__sniffer_thread.join()
 
-    def get_reports(self):
+    def get_reports(self, top_n=5):
+        sorted_source_ips = sorted(
+            self.__source_ips.items(), key=lambda x: x[1], reverse=True
+        )[:top_n]
+        sorted_destination_ips = sorted(
+            self.__destination_ips.items(), key=lambda x: x[1], reverse=True
+        )[:top_n]
+        sorted_destination_countries = sorted(
+            self.__destination_countries.items(), key=lambda x: x[1], reverse=True
+        )[:top_n]
+
         return {
-            "sourceIps": self.__source_ips,
-            "destinationIps": self.__destination_ips,
-            "destinationCountries": self.__destination_countries,
+            "sourceIps": dict(sorted_source_ips),
+            "destinationIps": dict(sorted_destination_ips),
+            "destinationCountries": dict(sorted_destination_countries),
         }
